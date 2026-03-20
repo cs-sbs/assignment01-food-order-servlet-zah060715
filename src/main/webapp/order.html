@@ -3,18 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>外卖平台 - 首页</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #menu, #order-result {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<h1>欢迎来外卖平台</h1>
+
+<h1>欢迎来到外卖平台</h1>
+
+<div id="menu">
+    <h2>菜单</h2>
+    <input type.="text" id="search-box" placeholder="搜索菜名...">
+    <button onclick="fetchMenu()">搜索</button>
+    <pre id="menu-list"></pre>
+</div>
 
 <h2>新增订单</h2>
 
-<form action="/order" method="post">
+<form id="order-form">
     用户: <input name="customer"><br>
     食物: <input name="food"><br>
-    数量: <input name="quantity"><br>
-    <input type="submit">
+    数量: <input type="number" name="quantity"><br>
+    <input type="submit" value="下单">
 </form>
+
+<div id="order-result"></div>
+
+<script>
+    async function fetchMenu() {
+        const searchName = document.getElementById('search-box').value;
+        const url = searchName ? `/menu?name=${searchName}` : '/menu';
+        const response = await fetch(url);
+        const menuText = await response.text();
+        document.getElementById('menu-list').textContent = menuText;
+    }
+
+    document.getElementById('order-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch('/order', {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        });
+        const resultText = await response.text();
+        const orderId = resultText.split(': ')[1];
+        const orderResultDiv = document.getElementById('order-result');
+        orderResultDiv.innerHTML = `
+            <p>${resultText}</p>
+            <a href="/order/${orderId}" target="_blank">查看订单 #${orderId} 详情</a>
+        `;
+    });
+
+    // Fetch menu on page load
+    fetchMenu();
+</script>
 
 </body>
 </html>
