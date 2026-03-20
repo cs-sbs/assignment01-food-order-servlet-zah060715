@@ -8,5 +8,6 @@ public class Main {
         System.out.println();
         System.out.println("或者在 Windows 下直接双击运行根目录下的 'start.bat'。");
         System.out.println("服务启动后，访问：http://localhost:8080/");
+        //..
     }
 }
