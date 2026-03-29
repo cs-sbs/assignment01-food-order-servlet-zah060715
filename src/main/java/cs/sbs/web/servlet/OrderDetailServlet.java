@@ -6,8 +6,10 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.ArrayList;
 
 public class OrderDetailServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -33,10 +35,18 @@ public class OrderDetailServlet extends HttpServlet {
             return;
         }
 
-        List<Order> orders = (List<Order>) getServletContext().getAttribute("orders");
+        Object ordersAttr = getServletContext().getAttribute("orders");
+        List<Order> orders = new ArrayList<>();
+        if (ordersAttr instanceof List<?>) {
+            for (Object o : (List<?>) ordersAttr) {
+                if (o instanceof Order) {
+                    orders.add((Order) o);
+                }
+            }
+        }
 
         Order foundOrder = null;
-        if (orders != null) {
+        if (!orders.isEmpty()) {
             for (Order order : orders) {
                 if (order.getId() == orderId) {
                     foundOrder = order;
